@@ -1,3 +1,4 @@
+import metadata from '../data/metadata.json'
 
 const MATERIAL_ICON_CODE_POINTS_FILES = [
   { font: "filled", url: 'https://raw.githubusercontent.com/google/material-design-icons/master/font/MaterialIcons-Regular.codepoints' },
@@ -13,8 +14,16 @@ export const loadMaterialIcons = async() => {
     const data = await response.text()
     const lines = data.split('\n')
     return lines.map((line: string) => {
-      const [name, hex] = line.split(/\s/)
-      return { name, hex, type: source.type }
+      const [name, codepoint] = line.split(/\s/)
+      const icon = metadata.icons.find(icon => icon.name === name)
+      return {
+        name,
+        codepoint,
+        font: source.font,
+        category: icon?.categories?.[0],
+        tags: icon?.tags || [],
+        popularity: icon?.popularity || 0,
+      }
     })
   }))
 }
