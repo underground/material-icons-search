@@ -22,7 +22,7 @@ import { defineComponent, computed, reactive, toRefs, onMounted } from 'vue'
 import { loadMaterialIcons } from '../api/index'
 
 interface Icon {
-  type: string;
+  font: string;
   name: string;
   hex: string;
 }
