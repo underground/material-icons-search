@@ -63,6 +63,9 @@ interface Icon {
   font: string;
   name: string;
   codepoint: string;
+  category: string | undefined;
+  tags: string[];
+  popularity: number;
 }
 
 interface State {
@@ -74,7 +77,7 @@ interface State {
 }
 
 export default defineComponent({
-  name: 'IconList',
+  name: 'Main',
   setup() {
     const state = reactive<State>({
       icons: [],
