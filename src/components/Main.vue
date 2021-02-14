@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="details-reset details-overlay details-overlay-dark">
     <div class="position-sticky top-0 d-flex flex-items-center border-bottom bg-gray-light py-1">
       <select class="form-select ml-3 mr-2" aria-label="Icon type"
         v-model="font">
@@ -9,7 +9,7 @@
         <option value="twoTone">Two-Tone</option>
         <option value="sharp">Sharp</option>
       </select>
-      <input class="form-control mr-3" type="search" placeholder="Search name..." aria-label="Icon search"
+      <input class="form-control mr-3" type="search" placeholder="Search icons..." aria-label="Icon search"
         v-model="searchText"
         />
       <div class="form-checkbox mr-2">
@@ -22,27 +22,31 @@
     </div>
     <div v-for="category in categories" :key="category">
       <div class="Subhead Subhead--spacious mx-3 my-2">
-        <div class="Subhead-heading">{{ category === "undefined" ? "other" : category }}</div>
+        <div class="Subhead-heading"
+          :style="{ textTransform: 'capitalize' }">
+          {{ category === "undefined" ? "other" : category }}
+        </div>
         <div class="Subhead-actions">
           <span class="Counter mr-1">{{ groupedIcons[category].length }}</span>
         </div>
       </div>
       <div class="grid mx-3">
-        <div class="grid-item"
-          v-for="(icon, index) in groupedIcons[category]" :key="index">
+        <div class="grid-item hover-grow"
+          v-for="(icon, index) in groupedIcons[category]" :key="index"
+          v-bind:class="{ active: icon.name === selectedName }"
+          @click="select(icon.name)">
           <div class="d-flex flex-column">
             <div class="grid-item-icon d-flex flex-justify-center">
-              <span class="material-icons"
-                @click="selectIcon(icon.name)">{{ icon.name }}</span>
+              <span class="material-icons">{{ icon.name }}</span>
             </div>
             <div class="grid-item-title d-flex flex-justify-center">
-              <span class="text-small css-truncate css-truncate-overflow pl-1 pr-1">
+              <span class="text-small css-truncate css-truncate-overflow pl-1 pr-1" @click.stop="">
                 {{ icon.name }}
               </span>
             </div>
             <div class="grid-item-description d-flex flex-justify-center">
               <span class="text-small css-truncate css-truncate-overflow pl-1 pr-1"
-                v-show="showCodepoint">
+                v-show="showCodepoint" @click.stop="">
                 {{ icon.codepoint }}
               </span>
             </div>
@@ -50,6 +54,7 @@
         </div>
       </div>
     </div>
+    <Details v-if="!!selectedName" v-bind="selectedIcon" />
   </div>
 </template>
 
@@ -58,6 +63,7 @@ import { defineComponent, computed, reactive, toRefs, onMounted } from 'vue'
 import groupBy from 'lodash.groupby'
 import sortBy from 'lodash.sortby'
 import { loadMaterialIcons } from '../api/index'
+import Details from './Details.vue';
 
 interface Icon {
   font: string;
@@ -73,18 +79,21 @@ interface State {
   font: string;
   showCodepoint: boolean;
   searchText: string;
-  selectedIcon: string;
+  selectedName: string;
 }
 
 export default defineComponent({
   name: 'Main',
+  components: {
+    Details,
+  },
   setup() {
     const state = reactive<State>({
       icons: [],
       font: "filled",
       showCodepoint: false,
       searchText: "",
-      selectedIcon: "",
+      selectedName: "",
     })
     onMounted(async () => {
       const results = await loadMaterialIcons()
@@ -92,7 +101,9 @@ export default defineComponent({
         state.icons.push(data)
       })
     })
-    const selectIcon = (name: string) => state.selectedIcon = name;
+    const select = (name: string) => {
+      state.selectedName = state.selectedName === name ? "" : name;
+    }
     const toggleShowCodepoint = (value: boolean) => state.showCodepoint = value;
     const filter = () => state.icons.filter((icon: any) => {
       if (icon.font !== state.font) {
@@ -103,12 +114,20 @@ export default defineComponent({
     const group = () => groupBy(filter(), 'category')
     const categories = computed(() => sortBy(Object.keys(group())))
     const groupedIcons = computed(() => group())
+    const selectedIcon = computed(() => {
+      return {
+        ...state.icons.find((icon: any) => icon.name === state.selectedName),
+        onClose: () => select(""),
+      }
+    }
+    )
     return {
       ...toRefs(state),
-      selectIcon,
+      select,
       toggleShowCodepoint,
       categories,
       groupedIcons,
+      selectedIcon,
     }
   },
 });
@@ -119,6 +138,9 @@ export default defineComponent({
 @import '@primer/css/subhead/index.scss';
 @import '@primer/css/labels/index.scss';
 
+.position-sticky {
+  z-index: 10;
+}
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, 120px);
@@ -142,10 +164,10 @@ export default defineComponent({
       width: 100%;
     }
 
+    &.active,
     &:hover {
       background-color: $gray-000;
       border-color: $gray-200;
-      color: $gray-700;
     }
     .grid-item-icon {
       flex-basis: 60%;
