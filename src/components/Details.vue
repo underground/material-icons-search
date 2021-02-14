@@ -19,20 +19,35 @@
             <div class="Box-body overflow-auto">
               <dl>
                 <dt class="f6 text-bold text-uppercase text-gray">Html:</dt>
-                <dd><pre><code>{{ htmlCode() }}</code></pre></dd>
+                <dd class="position-relative">
+                  <pre><code>{{ htmlCode() }}</code></pre>
+                  <Code :code="htmlCode()" />
+                </dd>
               </dl>
               <dl>
                 <dt class="f6 text-bold text-uppercase text-gray">React:</dt>
-                <dd><pre><code>{{ reactCode() }}</code></pre></dd>
+                <dd class="position-relative">
+                  <pre><code>{{ reactCode() }}</code></pre>
+                  <Code :code="reactCode()" />
+                </dd>
               </dl>
               <dl>
                 <dt class="f6 text-bold text-uppercase text-gray">CSS:</dt>
-                <dd><pre><code>{{ cssCode("before") }}</code></pre></dd>
-                <dd><pre><code>{{ cssCode("after") }}</code></pre></dd>
+                <dd class="position-relative">
+                  <pre><code>{{ cssCode("before") }}</code></pre>
+                  <Code :code="cssCode('before')" />
+                </dd>
+                <dd class="position-relative">
+                  <pre><code>{{ cssCode("after") }}</code></pre>
+                  <Code :code="cssCode('after')" />
+                </dd>
               </dl>
               <dl>
                 <dt class="f6 text-bold text-uppercase text-gray">Codepoint:</dt>
-                <dd><pre><code>{{ codepoint }}</code></pre></dd>
+                <dd class="position-relative">
+                  <pre><code>{{ codepoint }}</code></pre>
+                  <Code :code="codepoint" />
+                </dd>
               </dl>
               <dl>
                 <dt class="f6 text-bold text-uppercase text-gray">Category:</dt>
@@ -56,10 +71,14 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from 'vue'
+import { defineComponent, reactive, PropType, toRefs } from 'vue'
+import Code from './Code.vue';
 
 export default defineComponent({
   name: 'Details',
+  components: {
+    Code,
+  },
   props: {
     font: {
       type: String,
