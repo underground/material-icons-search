@@ -20,7 +20,12 @@
         </label>
       </div>
     </div>
-    <div v-if="categories.length">
+    <div v-if="loading">
+      <div class="mx-3 my-2">
+        <span>Loading</span><span class="AnimatedEllipsis"></span>
+      </div>
+    </div>
+    <div v-else-if="categories.length">
       <div v-for="category in categories" :key="category">
         <div class="Subhead Subhead--spacious mx-3 my-2">
           <div class="Subhead-heading"
@@ -83,6 +88,7 @@ interface Icon {
 }
 
 interface State {
+  loading: boolean;
   icons: Icon[];
   font: string;
   showCodepoint: boolean;
@@ -97,6 +103,7 @@ export default defineComponent({
   },
   setup() {
     const state = reactive<State>({
+      loading: true,
       icons: [],
       font: "filled",
       showCodepoint: false,
@@ -108,6 +115,7 @@ export default defineComponent({
       results.flat().forEach(data => {
         state.icons.push(data)
       })
+      state.loading = false
     })
     const select = (name: string) => {
       state.selectedName = state.selectedName === name ? "" : name;
@@ -148,6 +156,7 @@ export default defineComponent({
 @import '@primer/css/subhead/index.scss';
 @import '@primer/css/labels/index.scss';
 @import '@primer/css/blankslate/index.scss';
+@import '@primer/css/loaders/index.scss';
 
 
 .position-sticky {
