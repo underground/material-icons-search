@@ -1,5 +1,6 @@
 <template>
-  <div class="details-reset details-overlay details-overlay-dark">
+  <div class="details-reset details-overlay details-overlay-dark"
+   @click="$emit('close')">
     <div class="position-sticky top-0 d-flex flex-items-center border-bottom bg-gray-light py-1">
       <select class="form-select ml-3 mr-2" aria-label="Icon type"
         v-model="font">
@@ -136,8 +137,7 @@ export default defineComponent({
         ...state.icons.find((icon: any) => icon.name === state.selectedName),
         onClose: () => select(""),
       }
-    }
-    )
+    })
     return {
       ...toRefs(state),
       select,
