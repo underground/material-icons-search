@@ -14,7 +14,8 @@
     "core-js": "^3.6.5",
     "lodash.groupby": "^4.6.0",
     "lodash.sortby": "^4.7.0",
-    "vue": "^3.0.0"
+    "vue": "^3.0.0",
+    "vue-observe-visibility": "^1.0.0"
   },
   "devDependencies": {
     "@types/lodash.groupby": "^4.6.6",
