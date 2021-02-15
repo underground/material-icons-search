@@ -20,38 +20,46 @@
         </label>
       </div>
     </div>
-    <div v-for="category in categories" :key="category">
-      <div class="Subhead Subhead--spacious mx-3 my-2">
-        <div class="Subhead-heading"
-          :style="{ textTransform: 'capitalize' }">
-          {{ category === "undefined" ? "other" : category }}
+    <div v-if="categories.length">
+      <div v-for="category in categories" :key="category">
+        <div class="Subhead Subhead--spacious mx-3 my-2">
+          <div class="Subhead-heading"
+            :style="{ textTransform: 'capitalize' }">
+            {{ category === "undefined" ? "other" : category }}
+          </div>
+          <div class="Subhead-actions">
+            <span class="Counter mr-1">{{ groupedIcons[category].length }}</span>
+          </div>
         </div>
-        <div class="Subhead-actions">
-          <span class="Counter mr-1">{{ groupedIcons[category].length }}</span>
-        </div>
-      </div>
-      <div class="grid mx-3">
-        <div class="grid-item hover-grow"
-          v-for="(icon, index) in groupedIcons[category]" :key="index"
-          v-bind:class="{ active: icon.name === selectedName }"
-          @click="select(icon.name)">
-          <div class="d-flex flex-column">
-            <div class="grid-item-icon d-flex flex-justify-center">
-              <span class="material-icons">{{ icon.name }}</span>
-            </div>
-            <div class="grid-item-title d-flex flex-justify-center">
-              <span class="text-small css-truncate css-truncate-overflow pl-1 pr-1" @click.stop="">
-                {{ icon.name }}
-              </span>
-            </div>
-            <div class="grid-item-description d-flex flex-justify-center">
-              <span class="text-small css-truncate css-truncate-overflow pl-1 pr-1"
-                v-show="showCodepoint" @click.stop="">
-                {{ icon.codepoint }}
-              </span>
+        <div class="grid mx-3">
+          <div class="grid-item hover-grow"
+            v-for="(icon, index) in groupedIcons[category]" :key="index"
+            v-bind:class="{ active: icon.name === selectedName }"
+            @click="select(icon.name)">
+            <div class="d-flex flex-column">
+              <div class="grid-item-icon d-flex flex-justify-center">
+                <span class="material-icons">{{ icon.name }}</span>
+              </div>
+              <div class="grid-item-title d-flex flex-justify-center">
+                <span class="text-small css-truncate css-truncate-overflow pl-1 pr-1" @click.stop="">
+                  {{ icon.name }}
+                </span>
+              </div>
+              <div class="grid-item-description d-flex flex-justify-center">
+                <span class="text-small css-truncate css-truncate-overflow pl-1 pr-1"
+                  v-show="showCodepoint" @click.stop="">
+                  {{ icon.codepoint }}
+                </span>
+              </div>
             </div>
           </div>
         </div>
+      </div>
+    </div>
+    <div v-else>
+      <div class="blankslate blankslate-spacious">
+        <h3 class="mb-2">Can’t find any icons.</h3>
+        <p><button class="btn-link" type="button" @click="clear">Clear your filters and try again.</button></p>
       </div>
     </div>
     <Details v-if="!!selectedName" v-bind="selectedIcon" />
@@ -111,6 +119,7 @@ export default defineComponent({
       }
       return !state.searchText || icon.name.indexOf(state.searchText) >= 0
     })
+    const clear = () => state.searchText = ""
     const group = () => groupBy(filter(), 'category')
     const categories = computed(() => sortBy(Object.keys(group())))
     const groupedIcons = computed(() => group())
@@ -124,6 +133,7 @@ export default defineComponent({
     return {
       ...toRefs(state),
       select,
+      clear,
       toggleShowCodepoint,
       categories,
       groupedIcons,
@@ -137,6 +147,8 @@ export default defineComponent({
 @import '@primer/css/utilities/index.scss';
 @import '@primer/css/subhead/index.scss';
 @import '@primer/css/labels/index.scss';
+@import '@primer/css/blankslate/index.scss';
+
 
 .position-sticky {
   z-index: 10;
