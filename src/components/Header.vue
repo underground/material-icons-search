@@ -1,9 +1,7 @@
 <template>
   <div class="Header">
     <div class="Header-item">
-      <a href="https://underground.github.io/material-icons/" class="Header-link f4 d-flex flex-items-center mr-2">
-        <span>MATERIAL ICONS</span>
-      </a>
+      <span class="title">MATERIAL ICONS SEARCH</span>
     </div>
     <div class="Header-item Header-item--full">
     </div>
@@ -24,7 +22,15 @@ export default defineComponent({
 });
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 @import "@primer/css/header/index.scss";
+
+.title {
+  font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+  font-weight: 300;
+  font-size: 1.1em;
+  letter-spacing: .3rem;
+  color: white;
+}
 
 </style>
