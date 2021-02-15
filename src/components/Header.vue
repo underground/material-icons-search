@@ -1,6 +1,7 @@
 <template>
   <div class="Header">
     <div class="Header-item">
+      <span class="logo mr-2">{{ logo }}</span>
       <span class="title">MATERIAL ICONS SEARCH</span>
     </div>
     <div class="Header-item Header-item--full">
@@ -19,12 +20,24 @@ import { defineComponent } from 'vue';
 
 export default defineComponent({
   name: 'Header',
+  setup() {
+    const logo = "</>"
+    return {
+      logo
+    }
+  },
 });
 </script>
 
 <style lang="scss" scoped>
 @import "@primer/css/header/index.scss";
+@import url('https://fonts.googleapis.com/css2?family=Work+Sans:wght@500&display=swap');
 
+.logo {
+  font-family: 'Work Sans', sans-serif;
+  font-size: 1.1em;
+  color: white;
+}
 .title {
   font-family: "Roboto", "Helvetica", "Arial", sans-serif;
   font-weight: 300;
