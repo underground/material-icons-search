@@ -17,7 +17,7 @@
         <label class="text-normal">
           <input type="checkbox" v-model="showCodepoint" aria-describedby="show-codepoint-for-checkbox"
             @change="toggleShowCodepoint(showCodepoint)">
-          Show codepoint
+          Codepoint
         </label>
       </div>
     </div>
