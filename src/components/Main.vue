@@ -1,5 +1,5 @@
 <template>
-  <div class="details-reset details-overlay details-overlay-dark"
+  <main class="details-reset details-overlay details-overlay-dark mb-4"
    @click="$emit('close')">
     <div class="position-sticky top-0 d-flex flex-items-center border-bottom bg-gray-light py-1">
       <select class="form-select ml-3 mr-2" aria-label="Icon type"
@@ -69,7 +69,7 @@
       </div>
     </div>
     <Details v-if="!!selectedName" v-bind="selectedIcon" />
-  </div>
+  </main>
 </template>
 
 <script lang="ts">
@@ -158,6 +158,9 @@ export default defineComponent({
 @import '@primer/css/blankslate/index.scss';
 @import '@primer/css/loaders/index.scss';
 
+#main {
+  min-height: 100vh;
+}
 
 .position-sticky {
   z-index: 10;

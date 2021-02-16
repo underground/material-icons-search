@@ -1,7 +1,8 @@
 <template>
-  <div>
+  <div class="height-full width-full d-flex flex-column">
     <Header v-bind:showAbout="state.showAbout" @close="toggleAbout(false)" @open="toggleAbout(true)" />
     <Main @close="toggleAbout(false)" />
+    <Footer />
   </div>
 </template>
 
@@ -9,6 +10,7 @@
 import { defineComponent, reactive } from 'vue';
 import Header from './components/Header.vue';
 import Main from './components/Main.vue';
+import Footer from './components/Footer.vue';
 
 interface State {
   showAbout: boolean;
@@ -19,6 +21,7 @@ export default defineComponent({
   components: {
     Header,
     Main,
+    Footer,
   },
   setup() {
     const state = reactive<State>({
@@ -50,5 +53,6 @@ body {
   padding: 0;
 }
 #app {
+  height: 100%;
 }
 </style>
