@@ -71,7 +71,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, PropType, toRefs } from 'vue'
+import { defineComponent, PropType } from 'vue'
 import Code from './Code.vue';
 
 export default defineComponent({
