@@ -122,7 +122,7 @@ export default defineComponent({
       state.selectedName = state.selectedName === name ? "" : name;
     }
     const toggleShowCodepoint = (value: boolean) => state.showCodepoint = value;
-    const filter = () => state.icons.filter((icon: any) => {
+    const filter = () => state.icons.filter((icon: Icon) => {
       if (icon.font !== state.font) {
         return false
       }
@@ -134,7 +134,7 @@ export default defineComponent({
     const groupedIcons = computed(() => group())
     const selectedIcon = computed(() => {
       return {
-        ...state.icons.find((icon: any) => icon.name === state.selectedName),
+        ...state.icons.find((icon: Icon) => icon.name === state.selectedName),
         onClose: () => select(""),
       }
     })
