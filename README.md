@@ -1,4 +1,4 @@
-# material-icons
+# material-icons-search
 
 ## Project setup
 ```

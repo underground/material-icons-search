@@ -16,7 +16,7 @@
           </div>
           <p class="f5">A site to help web developers find <a href="https://material.io/resources/icons/" target="_blank" rel="noopener noreferrer">Google Material Icons</a> quickly and easily.</p>
           <hr class="my-2">
-          <a class="f6" href="https://github.com/underground/material-icons/issues/new" target="_blank">Look forward to hearing about your ideas and suggestions.</a>
+          <a class="f6" href="https://github.com/underground/material-icons-search/issues/new" target="_blank">Look forward to hearing about your ideas and suggestions.</a>
         </div>
       </div>
     </div>
