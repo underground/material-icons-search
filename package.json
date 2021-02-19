@@ -6,7 +6,7 @@
     "setup": "node setup.js src/data/metadata.json",
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "deploy": "gh-pages -d dist",
+    "deploy": "npm run build && gh-pages -d dist",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
