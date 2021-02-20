@@ -49,11 +49,11 @@
                   <Code :code="codepoint" />
                 </dd>
               </dl>
-              <dl>
+              <dl v-if="category">
                 <dt class="f6 text-bold text-uppercase text-gray">Category:</dt>
                 <dd><span class="Label ml-1 mt-1">{{ category }}</span></dd>
               </dl>
-              <dl>
+              <dl v-if="tags.length">
                 <dt class="f6 text-bold text-uppercase text-gray">Tags:</dt>
                 <div class="d-flex flex-wrap">
                   <dd v-for="tag in tags" :key="tag"
@@ -93,7 +93,6 @@ export default defineComponent({
     },
     category: {
       type: String,
-      default: "other",
     },
     tags: {
       type: Array as PropType<string[]>,
