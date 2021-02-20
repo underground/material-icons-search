@@ -78,15 +78,7 @@ import groupBy from 'lodash.groupby'
 import sortBy from 'lodash.sortby'
 import { loadMaterialIcons } from '../api/index'
 import Details from './Details.vue';
-
-interface Icon {
-  font: string;
-  name: string;
-  codepoint: string;
-  category: string | undefined;
-  tags: string[];
-  popularity: number;
-}
+import Icon from '../types/icon'
 
 interface State {
   loading: boolean;
