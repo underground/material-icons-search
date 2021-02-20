@@ -31,7 +31,7 @@
         <div class="Subhead Subhead--spacious mx-3 my-2">
           <div class="Subhead-heading"
             :style="{ textTransform: 'capitalize' }">
-            {{ category === "undefined" ? "other" : category }}
+            {{ category === "undefined" ? "none" : category }}
           </div>
           <div class="Subhead-actions">
             <span class="Counter mr-1">{{ groupedIcons[category].length }}</span>
