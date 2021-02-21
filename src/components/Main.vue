@@ -4,11 +4,10 @@
     <div class="position-sticky top-0 d-flex flex-items-center border-bottom bg-gray-light py-1">
       <select class="form-select ml-3 mr-2" aria-label="Icon type"
         v-model="font">
-        <option value="filled">Filled</option>
-        <option value="outlined">Outlined</option>
-        <option value="rounded">Rounded</option>
-        <option value="twoTone">Two-Tone</option>
-        <option value="sharp">Sharp</option>
+        <option
+          v-for="font in MATERIAL_ICON_CODE_POINTS_FILES" :key="font.font" :value="font.font">
+          {{ font.label }}
+        </option>
       </select>
       <input class="form-control mr-3" type="search" placeholder="Search icons..." aria-label="Icon search"
         v-model="searchText"
@@ -79,6 +78,7 @@ import sortBy from 'lodash.sortby'
 import { loadMaterialIcons } from '../api/index'
 import Details from './Details.vue';
 import Icon from '../types/icon'
+import { MATERIAL_ICON_CODE_POINTS_FILES } from '../api'
 
 interface State {
   loading: boolean;
@@ -98,7 +98,7 @@ export default defineComponent({
     const state = reactive<State>({
       loading: true,
       icons: [],
-      font: "filled",
+      font: MATERIAL_ICON_CODE_POINTS_FILES[0].font,
       showCodepoint: false,
       searchText: "",
       selectedName: "",
@@ -132,6 +132,7 @@ export default defineComponent({
     })
     return {
       ...toRefs(state),
+      MATERIAL_ICON_CODE_POINTS_FILES,
       select,
       clear,
       toggleShowCodepoint,
