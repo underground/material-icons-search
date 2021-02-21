@@ -19,6 +19,11 @@
           Codepoint
         </label>
       </div>
+      <select class="form-select ml-3 mr-2" aria-label="Sort"
+        v-model="sort">
+        <option value="category">Category</option>
+        <option value="popularity">Popularity</option>
+      </select>
     </div>
     <div v-if="loading">
       <div class="mx-3 my-2">
@@ -26,19 +31,10 @@
       </div>
     </div>
     <div v-else-if="categories.length">
-      <div v-for="category in categories" :key="category">
-        <div class="Subhead Subhead--spacious mx-3 my-2">
-          <div class="Subhead-heading"
-            :style="{ textTransform: 'capitalize' }">
-            {{ category === "undefined" ? "none" : category }}
-          </div>
-          <div class="Subhead-actions">
-            <span class="Counter mr-1">{{ groupedIcons[category].length }}</span>
-          </div>
-        </div>
-        <div class="grid mx-3">
+      <div v-if="sort === 'popularity'">
+        <div class="grid mx-3 my-3">
           <div class="grid-item hover-grow"
-            v-for="(icon, index) in groupedIcons[category]" :key="index"
+            v-for="(icon, index) in popularityIcons" :key="index"
             v-bind:class="{ active: icon.name === selectedName }"
             @click="select(icon.name)">
             <div class="d-flex flex-column">
@@ -60,6 +56,42 @@
           </div>
         </div>
       </div>
+      <div v-else>
+        <div v-for="category in categories" :key="category">
+          <div class="Subhead Subhead--spacious mx-3 my-2">
+            <div class="Subhead-heading"
+              :style="{ textTransform: 'capitalize' }">
+              {{ category === "undefined" ? "none" : category }}
+            </div>
+            <div class="Subhead-actions">
+              <span class="Counter mr-1">{{ groupedIcons[category].length }}</span>
+            </div>
+          </div>
+          <div class="grid mx-3">
+            <div class="grid-item hover-grow"
+              v-for="(icon, index) in groupedIcons[category]" :key="index"
+              v-bind:class="{ active: icon.name === selectedName }"
+              @click="select(icon.name)">
+              <div class="d-flex flex-column">
+                <div class="grid-item-icon d-flex flex-justify-center">
+                  <span class="material-icons">{{ icon.name }}</span>
+                </div>
+                <div class="grid-item-title d-flex flex-justify-center">
+                  <span class="text-small css-truncate css-truncate-overflow pl-1 pr-1" @click.stop="">
+                    {{ icon.name }}
+                  </span>
+                </div>
+                <div class="grid-item-description d-flex flex-justify-center">
+                  <span class="text-small css-truncate css-truncate-overflow pl-1 pr-1"
+                    v-show="showCodepoint" @click.stop="">
+                    {{ icon.codepoint }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+      </div>
+      </div>
     </div>
     <div v-else>
       <div class="blankslate blankslate-spacious">
@@ -75,6 +107,7 @@
 import { defineComponent, computed, reactive, toRefs, onMounted } from 'vue'
 import groupBy from 'lodash.groupby'
 import sortBy from 'lodash.sortby'
+import orderBy from 'lodash.orderby'
 import { loadMaterialIcons } from '../api/index'
 import Details from './Details.vue';
 import Icon from '../types/icon'
@@ -84,6 +117,7 @@ interface State {
   loading: boolean;
   icons: Icon[];
   font: string;
+  sort: string;
   showCodepoint: boolean;
   searchText: string;
   selectedName: string;
@@ -99,6 +133,7 @@ export default defineComponent({
       loading: true,
       icons: [],
       font: MATERIAL_ICON_CODE_POINTS_FILES[0].font,
+      sort: 'category',
       showCodepoint: false,
       searchText: "",
       selectedName: "",
@@ -124,6 +159,7 @@ export default defineComponent({
     const group = () => groupBy(filter(), 'category')
     const categories = computed(() => sortBy(Object.keys(group())))
     const groupedIcons = computed(() => group())
+    const popularityIcons = computed(() => orderBy(filter(), ['popularity'], ['desc']))
     const selectedIcon = computed(() => {
       return {
         ...state.icons.find((icon: Icon) => icon.name === state.selectedName),
@@ -138,6 +174,7 @@ export default defineComponent({
       toggleShowCodepoint,
       categories,
       groupedIcons,
+      popularityIcons,
       selectedIcon,
     }
   },
