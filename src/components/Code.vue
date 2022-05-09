@@ -55,7 +55,7 @@ export default defineComponent({
 
   svg {
     > path {
-      fill: $gray-600;
+      fill: var(--color-scale-gray-6);
     }
   }
 }
