@@ -1,7 +1,7 @@
 <template>
   <main class="details-reset details-overlay details-overlay-dark mb-4"
    @click="$emit('close')">
-    <div class="position-sticky top-0 d-flex flex-items-center border-bottom color-bg-subtle py-1">
+    <div class="position-sticky top-0 d-flex flex-items-center border-bottom py-1 color-bg-default">
       <select class="form-select ml-3 mr-2" aria-label="Icon type"
         v-model="font">
         <option
@@ -212,17 +212,12 @@ export default defineComponent({
     border: solid 1px transparent;
     border-radius: 3px;
     cursor: pointer;
-    color: var(--color-scale-gray-9);
+    color: var(--color-fg-muted);
 
     > * {
       width: 100%;
     }
 
-    &.active,
-    &:hover {
-      background-color: var(--color-scale-gray-0);
-      border-color: var(--color-scale-gray-2);
-    }
     .grid-item-icon {
       flex-basis: 60%;
       flex-shrink: 0;
@@ -244,14 +239,7 @@ export default defineComponent({
       align-items: center;
       padding: 0 4px;
       max-width: 120px;
-      color: var(--color-scale-gray-5);
-
-      > span {
-        cursor: text;
-        &:hover {
-          color: var(--color-scale-gray-8);
-        }
-      }
+      color: var(--color-fg-subtle);
     }
   }
   .grid-form {
