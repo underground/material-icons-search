@@ -21,8 +21,8 @@
       </div>
       <select class="form-select ml-3 mr-2" aria-label="Sort"
         v-model="sort">
-        <option value="category">Category</option>
         <option value="popularity">Popularity</option>
+        <option value="category">Category</option>
       </select>
     </div>
     <div v-if="loading">
@@ -133,7 +133,7 @@ export default defineComponent({
       loading: true,
       icons: [],
       font: MATERIAL_ICON_CODE_POINTS_FILES[0].font,
-      sort: 'category',
+      sort: 'popularity',
       showCodepoint: false,
       searchText: "",
       selectedName: "",
