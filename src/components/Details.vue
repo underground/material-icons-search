@@ -180,8 +180,8 @@ export default defineComponent({
   }
 }
 .icon-viewer {
-  background-image: linear-gradient(0deg, rgba(var(--color-scale-gray-2), 0), rgba(var(--color-scale-gray-2), 0) 5px, var(--color-scale-gray-2), rgba(var(--color-scale-gray-2), 0) 6px), linear-gradient(90deg, rgba(var(--color-scale-gray-2), 0), rgba(var(--color-scale-gray-2), 0) 5px, var(--color-scale-gray-2), rgba(var(--color-scale-gray-2), 0) 6px);
-  background-size: 10px 10px;
+  background-image: radial-gradient(var(--color-fg-subtle) 1px, transparent 0);
+  background-size: 20px 20px;
   background-position: center center;
   border-bottom: solid 1px var(--color-border-subtle);
   overflow: hidden;
