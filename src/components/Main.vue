@@ -59,7 +59,7 @@
       <div v-else>
         <div v-for="category in categories" :key="category">
           <div class="Subhead Subhead--spacious mx-3 my-2">
-            <div class="Subhead-heading"
+            <div class="Subhead-heading f3"
               :style="{ textTransform: 'capitalize' }">
               {{ category === "undefined" ? "none" : category }}
             </div>
