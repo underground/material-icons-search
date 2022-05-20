@@ -145,7 +145,7 @@ export default defineComponent({
       })
       state.loading = false
     })
-    const select = (name: string) => {
+    const select = (name: string|undefined = "") => {
       state.selectedName = state.selectedName === name ? "" : name;
     }
     const toggleShowCodepoint = (value: boolean) => state.showCodepoint = value;
@@ -163,9 +163,15 @@ export default defineComponent({
     const selectedIcon = computed(() => {
       return {
         ...state.icons.find((icon: Icon) => icon.name === state.selectedName),
-        onClose: () => select(""),
+        onClose: () => select(),
       }
     })
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.code === 'Escape') {
+        select()
+      }
+    }
+    document.addEventListener('keyup', onKeyDown)
     return {
       ...toRefs(state),
       MATERIAL_ICON_CODE_POINTS_FILES,
