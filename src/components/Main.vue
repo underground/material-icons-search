@@ -33,7 +33,7 @@
     <div v-else-if="categories.length">
       <div v-if="sort === 'popularity'">
         <div class="grid mx-3 my-3">
-          <div class="grid-item hover-grow"
+          <div class="grid-item"
             v-for="(icon, index) in popularityIcons" :key="index"
             v-bind:class="{ active: icon.name === selectedName }"
             @click="select(icon.name)">
@@ -68,7 +68,7 @@
             </div>
           </div>
           <div class="grid mx-3">
-            <div class="grid-item hover-grow"
+            <div class="grid-item"
               v-for="(icon, index) in groupedIcons[category]" :key="index"
               v-bind:class="{ active: icon.name === selectedName }"
               @click="select(icon.name)">
@@ -214,8 +214,17 @@ export default defineComponent({
     cursor: pointer;
     color: var(--color-fg-muted);
 
+    &:hover {
+      border-color: var(--color-border-default);
+      transition: border-color .12s ease-out;
+    }
+
     > * {
       width: 100%;
+    }
+
+    &.active {
+      background: var(--color-action-list-item-default-active-bg);
     }
 
     .grid-item-icon {
