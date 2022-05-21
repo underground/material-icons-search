@@ -1,7 +1,7 @@
 <template>
   <main class="details-reset details-overlay details-overlay-dark mb-4"
    @click="$emit('close')">
-    <div class="position-sticky top-0 d-flex flex-items-center border-bottom py-1 color-bg-default">
+    <div class="position-sticky top-0 d-flex flex-items-center flex-wrap border-bottom py-1 color-bg-default">
       <select class="form-select ml-3 mr-2" aria-label="Icon type"
         v-model="font">
         <option
