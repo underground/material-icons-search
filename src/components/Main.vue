@@ -5,7 +5,7 @@
       <select class="form-select ml-3 mr-2" aria-label="Icon type"
         v-model="font">
         <option
-          v-for="font in MATERIAL_ICON_CODE_POINTS_FILES" :key="font.font" :value="font.font">
+          v-for="font in codePoints" :key="font.font" :value="font.font">
           {{ font.label }}
         </option>
       </select>
@@ -110,13 +110,13 @@ import sortBy from 'lodash.sortby'
 import orderBy from 'lodash.orderby'
 import { loadMaterialIcons } from '../api/index'
 import Details from './Details.vue';
-import Icon from '../types/icon'
-import { MATERIAL_ICON_CODE_POINTS_FILES } from '../api'
+import { FontType, Icon } from '../types'
+import codePoints from '../data/codePoints.json'
 
 interface State {
   loading: boolean;
   icons: Icon[];
-  font: string;
+  font: FontType;
   sort: string;
   showCodepoint: boolean;
   searchText: string;
@@ -174,7 +174,7 @@ export default defineComponent({
     document.addEventListener('keyup', onKeyDown)
     return {
       ...toRefs(state),
-      MATERIAL_ICON_CODE_POINTS_FILES,
+      codePoints,
       select,
       clear,
       toggleShowCodepoint,

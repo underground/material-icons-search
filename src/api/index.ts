@@ -1,16 +1,9 @@
 import metadata from '../data/metadata.json'
-import Icon from '../types/icon'
-
-export const MATERIAL_ICON_CODE_POINTS_FILES = [
-  { font: "filled", label: "Filled", url: 'https://raw.githubusercontent.com/google/material-design-icons/master/font/MaterialIcons-Regular.codepoints' },
-  { font: "outlined", label: "Outlined", url: 'https://raw.githubusercontent.com/google/material-design-icons/master/font/MaterialIconsOutlined-Regular.codepoints' },
-  { font: "rounded", label: "Rounded", url: 'https://raw.githubusercontent.com/google/material-design-icons/master/font/MaterialIconsRound-Regular.codepoints' },
-  { font: "twoTone", label: "Two-Tone", url: 'https://raw.githubusercontent.com/google/material-design-icons/master/font/MaterialIconsTwoTone-Regular.codepoints' },
-  { font: "sharp", label: "Sharp", url: 'https://raw.githubusercontent.com/google/material-design-icons/master/font/MaterialIconsSharp-Regular.codepoints' },
-]
+import codePoints from '../data/codePoints.json'
+import { Icon } from '../types'
 
 export const loadMaterialIcons = async() => {
-  return Promise.all(MATERIAL_ICON_CODE_POINTS_FILES.map(async(source) => {
+  return Promise.all(codePoints.map(async(source) => {
     const response = await fetch(source.url)
     const data = await response.text()
     const lines = data.split('\n')
