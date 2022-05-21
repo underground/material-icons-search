@@ -1,6 +1,7 @@
 <template>
   <footer class="d-flex flex-items-center border-top px-3 py-6 color-fg-default f5"
     :style="{ 'margin-top': 'auto' }"
+    style="display: none !important;"
     role="contentinfo">
     <span class="mr-2">© 2021 Material-Icons-Search</span>
     <span class="mr-3">
