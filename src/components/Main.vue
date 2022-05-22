@@ -90,7 +90,7 @@
               </div>
             </div>
           </div>
-      </div>
+        </div>
       </div>
     </div>
     <div v-else>
@@ -132,7 +132,7 @@ export default defineComponent({
     const state = reactive<State>({
       loading: true,
       icons: [],
-      font: MATERIAL_ICON_CODE_POINTS_FILES[0].font,
+      font: 'filled',
       sort: 'popularity',
       showCodepoint: false,
       searchText: "",
