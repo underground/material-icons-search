@@ -9,7 +9,9 @@
           {{ font.label }}
         </option>
       </select>
-      <input class="form-control mr-3" type="search" placeholder="Search icons..." aria-label="Icon search"
+      <input class="form-control mr-3" type="search" aria-label="Icon search"
+        :placeholder="placeholder"
+        ref="searchRef"
         v-model="searchText"
         />
       <div class="form-checkbox">
@@ -134,6 +136,7 @@ export default defineComponent({
     Details,
   },
   setup() {
+    const searchRef = ref<HTMLInputElement>()
     const state = reactive<State>({
       loading: true,
       icons: [],
@@ -171,15 +174,22 @@ export default defineComponent({
         onClose: () => select(),
       }
     })
+    const placeholder = computed(() => `Search ${state.icons.length} icons (Press "/" to focus)`)
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.code === 'Escape') {
+      if (event.code === 'Escape' && state.selectedName) {
         select()
+      } else if (event.code === 'Slash') {
+        if (searchRef.value) {
+          searchRef.value.focus()
+        }
       }
     }
     document.addEventListener('keyup', onKeyDown)
     return {
       ...toRefs(state),
       codePoints,
+      searchRef,
+      placeholder,
       select,
       clear,
       toggleShowCodepoint,
