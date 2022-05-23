@@ -1,20 +1,20 @@
 <template>
-  <main class="details-reset details-overlay details-overlay-dark mb-4"
+  <main class="details-reset details-overlay details-overlay-dark mb-4 width-full"
    @click="$emit('close')">
-    <div class="position-sticky top-0 d-flex flex-items-center flex-wrap border-bottom py-1 color-bg-default">
-      <select class="form-select ml-3 mr-2" aria-label="Icon type"
+    <div class="position-sticky top-0 d-flex flex-items-center flex-nowrap border-bottom py-2 color-bg-default">
+      <select class="form-select" aria-label="Icon type"
         v-model="font">
         <option
           v-for="font in codePoints" :key="font.font" :value="font.font">
           {{ font.label }}
         </option>
       </select>
-      <input class="form-control mr-3" type="search" aria-label="Icon search"
+      <input class="form-control" type="search" aria-label="Icon search"
         :placeholder="placeholder"
         ref="searchRef"
         v-model="searchText"
         />
-      <div class="form-checkbox">
+      <div>
         <button class="btn" type="button"
           aria-label="toggle show codepoint"
           @click="toggleShowCodepoint">
@@ -26,7 +26,7 @@
           </template>
         </button>
       </div>
-      <select class="form-select ml-3 mr-2" aria-label="Sort"
+      <select class="form-select" aria-label="Sort"
         v-model="sort">
         <option value="popularity">Popularity</option>
         <option value="category">Category</option>
@@ -39,7 +39,7 @@
     </div>
     <div v-else-if="categories.length">
       <div v-if="sort === 'popularity'">
-        <div class="grid mx-3 my-3">
+        <div class="grid my-3">
           <div class="grid-item"
             v-for="(icon, index) in popularityIcons" :key="index"
             v-bind:class="{ active: icon.name === selectedName }"
@@ -64,7 +64,7 @@
         </div>
       </div>
       <div v-else>
-        <div v-for="category in categories" :key="category">
+        <div v-for="category in categories" :key="category" class="category">
           <div class="Subhead Subhead--spacious mx-3 my-2">
             <div class="Subhead-heading f3"
               :style="{ textTransform: 'capitalize' }">
@@ -74,7 +74,7 @@
               <span class="Counter mr-1">{{ groupedIcons[category].length }}</span>
             </div>
           </div>
-          <div class="grid mx-3">
+          <div class="grid">
             <div class="grid-item"
               v-for="(icon, index) in groupedIcons[category]" :key="index"
               v-bind:class="{ active: icon.name === selectedName }"
@@ -111,7 +111,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, reactive, toRefs, onMounted } from 'vue'
+import { defineComponent, computed, reactive, toRefs, onMounted, ref } from 'vue'
 import groupBy from 'lodash.groupby'
 import sortBy from 'lodash.sortby'
 import orderBy from 'lodash.orderby'
@@ -209,13 +209,31 @@ export default defineComponent({
 @import '@primer/css/blankslate/index.scss';
 @import '@primer/css/loaders/index.scss';
 
-#main {
-  min-height: 100vh;
-}
-
 .position-sticky {
   z-index: 10;
+  > * {
+    &:first-child {
+      margin-left: $spacer-3;
+    }
+    &:not(:first-child) {
+      margin-left: $spacer-2;
+    }
+  }
 }
+.category {
+  .Subhead {
+    @include breakpoint(md) {
+      width: $container-md;
+    }
+    @include breakpoint(lg) {
+      width: $container-lg;
+    }
+    @include breakpoint(xl) {
+      width: $container-xl;
+    }
+  }
+}
+
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, 120px);
@@ -225,18 +243,28 @@ export default defineComponent({
   align-items: center;
   align-content: center;
 
+  @include breakpoint(md) {
+    width: $container-md;
+  }
+  @include breakpoint(lg) {
+    width: $container-lg;
+  }
+  @include breakpoint(xl) {
+    width: $container-xl;
+  }
+
   .grid-item {
     height: 120px;
     width: 120px;
     display: inline-grid;
     justify-items: center;
-    border: solid 1px transparent;
+    border: solid 2px transparent;
     border-radius: 3px;
     cursor: pointer;
-    color: var(--color-fg-muted);
+    color: var(--color-fg-default);
 
     &:hover {
-      border-color: var(--color-border-default);
+      border-color: var(--color-accent-fg);
       transition: border-color .12s ease-out;
     }
 
@@ -245,7 +273,7 @@ export default defineComponent({
     }
 
     &.active {
-      background: var(--color-action-list-item-default-active-bg);
+      border-color: var(--color-accent-fg);
     }
 
     .grid-item-icon {
@@ -255,6 +283,7 @@ export default defineComponent({
 
       .material-icons {
         font-size: 3rem;
+        user-select: none;
       }
     }
     .grid-item-title {
@@ -276,6 +305,13 @@ export default defineComponent({
     grid-column: 1/-1;
     > * {
       display: inline-flex;
+    }
+  }
+}
+.btn {
+  svg {
+    path {
+      fill: var(--color-fg-muted);
     }
   }
 }
