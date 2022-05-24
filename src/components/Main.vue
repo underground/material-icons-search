@@ -9,11 +9,6 @@
           {{ font.label }}
         </option>
       </select>
-      <input class="form-control" type="search" aria-label="Icon search"
-        :placeholder="placeholder"
-        ref="searchRef"
-        v-model="searchText"
-        />
       <div>
         <button class="btn" type="button"
           aria-label="toggle show codepoint"
@@ -32,7 +27,7 @@
         <option value="category">Category</option>
       </select>
     </div>
-    <div v-if="loading">
+    <div v-if="icons.length === 0">
       <div class="mx-3 my-2">
         <span>Loading</span><span class="AnimatedEllipsis"></span>
       </div>
@@ -103,7 +98,7 @@
     <div v-else>
       <div class="blankslate blankslate-spacious">
         <h3 class="mb-2">Can’t find any icons.</h3>
-        <p><button class="btn-link" type="button" @click="clear">Clear your filters and try again.</button></p>
+        <p>Clear your filters and try again.</p>
       </div>
     </div>
     <Details v-if="!!selectedName" v-bind="selectedIcon" />
@@ -111,22 +106,18 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, reactive, toRefs, onMounted, ref } from 'vue'
+import { defineComponent, computed, reactive, toRefs, PropType } from 'vue'
 import groupBy from 'lodash.groupby'
 import sortBy from 'lodash.sortby'
 import orderBy from 'lodash.orderby'
-import { loadMaterialIcons } from '../api/index'
 import Details from './Details.vue';
 import { FontType, Icon } from '../types'
 import codePoints from '../data/codePoints.json'
 
 interface State {
-  loading: boolean;
-  icons: Icon[];
   font: FontType;
   sort: string;
   showCodepoint: boolean;
-  searchText: string;
   selectedName: string;
 }
 
@@ -135,63 +126,57 @@ export default defineComponent({
   components: {
     Details,
   },
-  setup() {
-    const searchRef = ref<HTMLInputElement>()
+  props: {
+    icons: {
+      type: Array as PropType<Icon[]>,
+      required: true
+    },
+    searchText: {
+      type: String,
+      required: true
+    },
+  },
+  setup(props) {
     const state = reactive<State>({
-      loading: true,
-      icons: [],
       font: 'filled',
       sort: 'popularity',
       showCodepoint: false,
-      searchText: "",
       selectedName: "",
     })
-    onMounted(async () => {
-      const results = await loadMaterialIcons()
-      results.flat().forEach(data => {
-        state.icons.push(data)
-      })
-      state.loading = false
-    })
     const select = (name: string|undefined = "") => {
-      state.selectedName = state.selectedName === name ? "" : name;
+      if (state.selectedName === name) {
+        state.selectedName = ""
+      } else {
+        state.selectedName = name
+      }
     }
     const toggleShowCodepoint = () => state.showCodepoint = !state.showCodepoint;
-    const filter = () => state.icons.filter((icon: Icon) => {
+    const filter = () => props.icons.filter((icon: Icon) => {
       if (icon.font !== state.font) {
         return false
       }
-      return !state.searchText || icon.name.indexOf(state.searchText) >= 0
+      return !props.searchText || icon.name.indexOf(props.searchText) >= 0
     })
-    const clear = () => state.searchText = ""
     const group = () => groupBy(filter(), 'category')
     const categories = computed(() => sortBy(Object.keys(group())))
     const groupedIcons = computed(() => group())
     const popularityIcons = computed(() => orderBy(filter(), ['popularity'], ['desc']))
     const selectedIcon = computed(() => {
       return {
-        ...state.icons.find((icon: Icon) => icon.name === state.selectedName),
+        ...props.icons.find((icon: Icon) => icon.name === state.selectedName),
         onClose: () => select(),
       }
     })
-    const placeholder = computed(() => `Search ${state.icons.length} icons (Press "/" to focus)`)
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.code === 'Escape' && state.selectedName) {
         select()
-      } else if (event.code === 'Slash') {
-        if (searchRef.value) {
-          searchRef.value.focus()
-        }
       }
     }
     document.addEventListener('keyup', onKeyDown)
     return {
       ...toRefs(state),
       codePoints,
-      searchRef,
-      placeholder,
       select,
-      clear,
       toggleShowCodepoint,
       categories,
       groupedIcons,

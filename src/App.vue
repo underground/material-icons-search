@@ -1,19 +1,29 @@
 <template>
   <div class="height-full width-full d-flex flex-column">
-    <Header v-bind:showAbout="state.showAbout" @close="toggleAbout(false)" @open="toggleAbout(true)" />
-    <Main @close="toggleAbout(false)" />
+    <Header
+      :iconNums="icons.length"
+      :searchText="searchText"
+      @update:searchText="onChange"
+      />
+    <Main
+      :searchText="searchText"
+      :icons="icons"
+      />
     <Footer />
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive } from 'vue';
+import { defineComponent, computed, reactive, toRefs, onMounted } from 'vue'
 import Header from './components/Header.vue';
 import Main from './components/Main.vue';
 import Footer from './components/Footer.vue';
+import { Icon } from './types'
+import { loadMaterialIcons } from './api/index'
 
 interface State {
-  showAbout: boolean;
+  icons: Icon[];
+  searchText: string;
 }
 
 export default defineComponent({
@@ -25,18 +35,21 @@ export default defineComponent({
   },
   setup() {
     const state = reactive<State>({
-      showAbout: false,
+      icons: [],
+      searchText: "",
     })
-    const toggleAbout = (show: boolean|undefined) => {
-      if (typeof show === undefined) {
-        state.showAbout = !state.showAbout
-      } else {
-        state.showAbout = !!show
-      }
+    onMounted(async () => {
+      const results = await loadMaterialIcons()
+      results.flat().forEach(data => {
+        state.icons.push(data)
+      })
+    })
+    const onChange = (value: string) => {
+      state.searchText = value
     }
     return {
-      state,
-      toggleAbout,
+      ...toRefs(state),
+      onChange,
     }
   }
 });

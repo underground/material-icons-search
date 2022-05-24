@@ -1,12 +1,22 @@
 <template>
   <div class="Header" @click="$emit('close')" v-observe-visibility="visibilityChanged">
-    <div class="Header-item flex-items-start">
-      <Logo classname="mr-2" />
-      <span class="title">MATERIAL ICONS SEARCH</span>
+    <div class="Header-item flex-items-center">
+      <Logo classname="ml-1" />
+    </div>
+    <div class="Header-item width-full">
+      <input class="form-control input-sm header-search width-full"
+        type="search"
+        spellcheck="false"
+        aria-label="Icon search"
+        ref="searchRef"
+        :placeholder="placeholder"
+        :value="searchText"
+        @input="$emit('update:searchText', $event.target.value)"
+        />
     </div>
     <div class="Header-item Header-item--full">
     </div>
-    <div class="Header-item theme-icon"
+    <div class="Header-item flex-items-center theme-icon"
       @click="changeColorMode(colorMode === 'light' ? 'dark' : 'light')">
        <template v-if="colorMode === 'light'">
         <svg xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Activate dark mode" viewBox="0 0 16 16" width="16" height="16">
@@ -17,22 +27,7 @@
         <svg xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Activate light mode" viewBox="0 0 16 16" width="16" height="16"><path fill-rule="evenodd" d="M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z"></path></svg>
       </template>
     </div>
-    <div class="Header-item Header-link position-relative mr-3" @click.stop="$emit(showAbout ? 'close' : 'open')"
-      style="display: none;">
-      About
-      <div class="Popover right-0 mt-2 position-absolute text-gray-dark text-normal ws-normal"
-        :class="{'v-hidden': !showAbout}">
-        <div class="Popover-message Popover-message--top-right text-left p-3 Box box-shadow-large wb-break-all">
-          <div class="d-flex flex-justify-center mb-2">
-            <Logo />
-          </div>
-          <p class="f5">A site to help web developers find <a href="https://material.io/resources/icons/" target="_blank" rel="noopener noreferrer">Google Material Icons</a> quickly and easily.</p>
-          <hr class="my-2">
-          <a class="f6" href="https://github.com/underground/material-icons-search/issues/new" target="_blank">Look forward to hearing about your ideas and suggestions.</a>
-        </div>
-      </div>
-    </div>
-    <div class="Header-item Header-link">
+    <div class="Header-item flex-items-center">
       <a href="https://material.io/develop/web/getting-started" target="_blank" rel="noopener noreferrer" class="Header-link mr-3">
         Get Started
       </a>
@@ -41,7 +36,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, toRefs, onMounted, watch } from 'vue'
+import { defineComponent, reactive, toRefs, ref, onMounted, watch, computed } from 'vue'
 import Logo from './Logo.vue';
 
 type ColorMode = 'auto' | 'light' | 'dark';
@@ -52,8 +47,12 @@ interface State {
 export default defineComponent({
   name: 'Header',
   props: {
-    showAbout: {
-      type: Boolean,
+    iconNums: {
+      type: Number,
+      required: true
+    },
+    searchText: {
+      type: String,
       required: true
     },
   },
@@ -64,6 +63,7 @@ export default defineComponent({
     const state = reactive<State>({
       colorMode: 'auto',
     })
+    const searchRef = ref<HTMLInputElement>()
     onMounted(() => {
       state.colorMode = window.matchMedia("(prefers-color-scheme: dark)").matches ? 'dark' : 'light'
     })
@@ -83,8 +83,19 @@ export default defineComponent({
     const changeColorMode = (color: ColorMode) => {
       state.colorMode = color
     }
+    const placeholder = computed(() => `Search ${props.iconNums} icons (Press "/" to focus)`)
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.code === 'Slash') {
+        if (searchRef.value) {
+          searchRef.value.focus()
+        }
+      }
+    }
+    document.addEventListener('keyup', onKeyDown)
     return {
       ...toRefs(state),
+      placeholder,
+      searchRef,
       changeColorMode,
       visibilityChanged,
     }
@@ -95,17 +106,6 @@ export default defineComponent({
 <style lang="scss" scoped>
 @import "@primer/css/header/index.scss";
 @import "@primer/css/popover/index.scss";
-
-.title {
-  font-weight: 300;
-  font-size: 1.1em;
-  letter-spacing: .2rem;
-  color: white;
-  display: none;
-  @include breakpoint(md) {
-    display: block;
-  }
-}
 
 svg {
   path {
@@ -122,6 +122,26 @@ svg {
   }
 }
 
+@include breakpoint(md) {
+  .header-search {
+    max-width: 272px;
+  }
+}
+
+.header-search {
+  box-shadow: none;
+  color: var(--color-scale-white);
+  background-color: var(--color-header-search-bg);
+  border: 1px solid var(--color-header-search-border);
+  box-shadow: none;
+  transition: .2s ease-in-out;
+  transition-property: max-width;
+
+  &:focus,
+  &:focus-visible {
+    border-color: var(--color-header-search-border);
+  }
+}
 
 .Header-link {
   cursor: pointer;
