@@ -1,7 +1,7 @@
 <template>
   <div class="copy-button p2 position-absolute tooltipped-nw"
     :class="{
-      'v-visible': navigator?.clipboard,
+      'v-visible': showCopyButton,
       'tooltipped': copied,
     }"
     :aria-label="copied ? 'Copied' : 'Copy to clipboard'"
@@ -13,7 +13,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, toRefs } from 'vue'
+import { defineComponent, reactive, toRefs, computed } from 'vue'
 
 interface State {
   copied: boolean;
@@ -26,6 +26,11 @@ export default defineComponent({
       type: String,
       required: true
     },
+  },
+  computed: {
+    showCopyButton() {
+      return navigator?.clipboard
+    }
   },
   setup(props) {
     const state = reactive<State>({
