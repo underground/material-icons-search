@@ -83,7 +83,7 @@ export default defineComponent({
     const changeColorMode = (color: ColorMode) => {
       state.colorMode = color
     }
-    const placeholder = computed(() => `Search ${props.iconNums} icons (Press "/" to focus)`)
+    const placeholder = computed(() => `Search ${props.iconNums > 0 ? props.iconNums.toLocaleString() : ''} icons (Press "/" to focus)`)
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.code === 'Slash') {
         if (searchRef.value) {
