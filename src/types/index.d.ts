@@ -1,4 +1,4 @@
-export interface Font = {
+export interface Font {
   font: string,
   label: string,
   url: string,
