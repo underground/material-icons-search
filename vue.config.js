@@ -7,6 +7,15 @@ module.exports = {
       }
     }
   },
+  configureWebpack: {
+    resolve: {
+      // https://github.com/primer/css/issues/442#issuecomment-860242683
+      alias: {
+        '/images/spinners': false,
+        '/images/modules': false
+      }
+    }
+  },
   chainWebpack: config => {
     config.module
       .rule('vue')
