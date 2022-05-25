@@ -24,7 +24,7 @@
       <select class="form-select" aria-label="Sort"
         v-model="sort">
         <option value="popularity">Popularity</option>
-        <option value="category">Category</option>
+        <option value="name">Name</option>
       </select>
     </div>
     <div v-if="icons.length === 0">
@@ -32,64 +32,26 @@
         <span>Loading</span><span class="AnimatedEllipsis"></span>
       </div>
     </div>
-    <div v-else-if="categories.length">
-      <div v-if="sort === 'popularity'">
-        <div class="grid my-3">
-          <div class="grid-item"
-            v-for="(icon, index) in popularityIcons" :key="index"
-            v-bind:class="{ active: icon.name === selectedName }"
-            @click="select(icon.name)">
-            <div class="d-flex flex-column">
-              <div class="grid-item-icon d-flex flex-justify-center">
-                <span class="material-icons">{{ icon.name }}</span>
-              </div>
-              <div class="grid-item-title d-flex flex-justify-center">
-                <span class="text-small css-truncate css-truncate-overflow pl-1 pr-1" @click.stop="">
-                  {{ icon.name }}
-                </span>
-              </div>
-              <div class="grid-item-description d-flex flex-justify-center">
-                <span class="text-small css-truncate css-truncate-overflow pl-1 pr-1"
-                  v-show="showCodepoint" @click.stop="">
-                  {{ icon.codepoint }}
-                </span>
-              </div>
+    <div v-else-if="filteredIcons.length">
+      <div class="grid my-3">
+        <div class="grid-item"
+          v-for="(icon, index) in filteredIcons" :key="index"
+          v-bind:class="{ active: icon.name === selectedName }"
+          @click="select(icon.name)">
+          <div class="d-flex flex-column">
+            <div class="grid-item-icon d-flex flex-justify-center">
+              <span class="material-icons">{{ icon.name }}</span>
             </div>
-          </div>
-        </div>
-      </div>
-      <div v-else>
-        <div v-for="category in categories" :key="category" class="category">
-          <div class="Subhead Subhead--spacious mx-3 my-2">
-            <div class="Subhead-heading f3"
-              :style="{ textTransform: 'capitalize' }">
-              {{ category === "undefined" ? "none" : category }}
+            <div class="grid-item-title d-flex flex-justify-center">
+              <span class="text-small css-truncate css-truncate-overflow pl-1 pr-1" @click.stop="">
+                {{ icon.name }}
+              </span>
             </div>
-            <div class="Subhead-actions">
-              <span class="Counter mr-1">{{ groupedIcons[category].length }}</span>
-            </div>
-          </div>
-          <div class="grid">
-            <div class="grid-item"
-              v-for="(icon, index) in groupedIcons[category]" :key="index"
-              v-bind:class="{ active: icon.name === selectedName }"
-              @click="select(icon.name)">
-              <div class="d-flex flex-column">
-                <div class="grid-item-icon d-flex flex-justify-center">
-                  <span class="material-icons">{{ icon.name }}</span>
-                </div>
-                <div class="grid-item-title d-flex flex-justify-center">
-                  <span class="text-small css-truncate css-truncate-overflow pl-1 pr-1" @click.stop="">
-                    {{ icon.name }}
-                  </span>
-                </div>
-                <div class="grid-item-description d-flex flex-justify-center">
-                  <span class="text-small css-truncate css-truncate-overflow pl-1 pr-1"
-                    v-show="showCodepoint" @click.stop="">
-                    {{ icon.codepoint }}
-                  </span>
-                </div>
-              </div>
+            <div class="grid-item-description d-flex flex-justify-center">
+              <span class="text-small css-truncate css-truncate-overflow pl-1 pr-1"
+                v-show="showCodepoint" @click.stop="">
+                {{ icon.codepoint }}
+              </span>
             </div>
           </div>
         </div>
@@ -107,8 +69,6 @@
 
 <script lang="ts">
 import { defineComponent, computed, reactive, toRefs, PropType } from 'vue'
-import groupBy from 'lodash.groupby'
-import sortBy from 'lodash.sortby'
 import orderBy from 'lodash.orderby'
 import Details from './Details.vue';
 import { FontType, Icon } from '../types'
@@ -157,10 +117,7 @@ export default defineComponent({
       }
       return !props.searchText || icon.name.indexOf(props.searchText) >= 0
     })
-    const group = () => groupBy(filter(), 'category')
-    const categories = computed(() => sortBy(Object.keys(group())))
-    const groupedIcons = computed(() => group())
-    const popularityIcons = computed(() => orderBy(filter(), ['popularity'], ['desc']))
+    const filteredIcons = computed(() => orderBy(filter(), [state.sort], [state.sort === 'popularity' ? 'desc' : 'asc']))
     const selectedIcon = computed(() => {
       return {
         ...props.icons.find((icon: Icon) => icon.name === state.selectedName),
@@ -178,9 +135,7 @@ export default defineComponent({
       codePoints,
       select,
       toggleShowCodepoint,
-      categories,
-      groupedIcons,
-      popularityIcons,
+      filteredIcons,
       selectedIcon,
     }
   },
