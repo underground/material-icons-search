@@ -2,13 +2,16 @@
   <main class="details-reset details-overlay details-overlay-dark mb-4 width-full"
    @click="$emit('close')">
     <div class="position-sticky top-0 d-flex flex-items-center flex-nowrap border-bottom py-2 color-bg-default">
-      <select class="form-select" aria-label="Icon type"
-        v-model="font">
-        <option
-          v-for="font in codePoints" :key="font.font" :value="font.font">
-          {{ font.label }}
-        </option>
-      </select>
+      <div class="BtnGroup" aria-label="Icon type">
+        <button v-for="item in codePoints"
+          :key="item.font"
+          :aria-selected="item.font == font ? 'true': 'false'"
+          @click="onChangeFont(item.font)"
+          class="BtnGroup-item btn"
+          type="button">
+          {{ item.label }}
+        </button>
+      </div>
       <div>
         <button class="btn" type="button"
           aria-label="toggle show codepoint"
@@ -40,7 +43,7 @@
           @click="select(icon.name)">
           <div class="d-flex flex-column">
             <div class="grid-item-icon d-flex flex-justify-center">
-              <span class="material-icons">{{ icon.name }}</span>
+              <span :class="[`icon ${font === 'filled' ? 'material-icons' : `material-icons-${font}`}`]">{{ icon.name }}</span>
             </div>
             <div class="grid-item-title d-flex flex-justify-center">
               <span class="text-small css-truncate css-truncate-overflow pl-1 pr-1" @click.stop="">
@@ -124,6 +127,7 @@ export default defineComponent({
         onClose: () => select(),
       }
     })
+    const onChangeFont = (value: string) => state.font = value
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.code === 'Escape' && state.selectedName) {
         select()
@@ -137,6 +141,7 @@ export default defineComponent({
       toggleShowCodepoint,
       filteredIcons,
       selectedIcon,
+      onChangeFont,
     }
   },
 });
@@ -221,7 +226,7 @@ export default defineComponent({
       flex-shrink: 0;
       align-items: flex-end;
 
-      .material-icons {
+      .icon {
         font-size: 3rem;
         user-select: none;
       }
