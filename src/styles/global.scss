@@ -1,1 +1,20 @@
 @import "@primer/css/index.scss";
+
+
+@function bg-gradient($color: #efefef, $amount: 25%, $angle: 45deg) {
+  @return linear-gradient(45deg, $color 25%, transparent 25%, transparent 75%, $color 75%),
+          linear-gradient(45deg, $color 25%, transparent 25%, transparent 75%, $color 75%);
+}
+
+:root {
+  &[data-color-mode=light] {
+    .icon-viewer {
+      background-image: bg-gradient(var(--color-scale-gray-1));
+    }
+  }
+  &[data-color-mode=dark] {
+    .icon-viewer {
+      background-image: bg-gradient(var(--color-scale-gray-8));
+    }
+  }
+}

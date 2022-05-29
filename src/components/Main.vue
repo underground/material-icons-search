@@ -237,6 +237,7 @@ export default defineComponent({
     }
     .grid-item-description {
       margin-top: 0.1em;
+      cursor: initial;
     }
     .grid-item-title,
     .grid-item-description {
