@@ -1,16 +1,19 @@
 [
   {
     "font": "filled",
+    "family": "Material Icons",
     "label": "Normal",
     "url": "https://raw.githubusercontent.com/google/material-design-icons/master/font/MaterialIcons-Regular.codepoints"
   },
   {
     "font": "round",
+    "family": "Material Icons Round",
     "label": "Rounded",
     "url": "https://raw.githubusercontent.com/google/material-design-icons/master/font/MaterialIconsRound-Regular.codepoints"
   },
   {
     "font": "sharp",
+    "family": "Material Icons Sharp",
     "label": "Sharp",
     "url": "https://raw.githubusercontent.com/google/material-design-icons/master/font/MaterialIconsSharp-Regular.codepoints"
   }

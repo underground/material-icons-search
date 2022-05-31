@@ -13,11 +13,14 @@ export const loadMaterialIcons = async() => {
         const icon = metadata.icons.find(icon => icon.name === name)
         acc.push({
           name,
+          version: icon?.version,
           codepoint,
           font: source.font,
+          unsupported_families: icon?.unsupported_families || [],
           category: icon?.categories?.[0],
           tags: icon?.tags || [],
           popularity: icon?.popularity || 0,
+          sizes_px: icon?.sizes_px || [],
         })
       }
       return acc

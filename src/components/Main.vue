@@ -2,7 +2,7 @@
   <main class="details-reset details-overlay details-overlay-dark mb-4 width-full"
    @click="$emit('close')">
     <div class="position-sticky top-0 d-flex flex-items-center flex-nowrap border-bottom py-2 color-bg-default">
-      <div class="BtnGroup" aria-label="Icon type">
+      <div class="BtnGroup hide-sm" aria-label="Icon type">
         <button v-for="item in codePoints"
           :key="item.font"
           :aria-selected="item.font == font ? 'true': 'false'"
@@ -73,9 +73,15 @@
 <script lang="ts">
 import { defineComponent, computed, reactive, toRefs, PropType } from 'vue'
 import orderBy from 'lodash.orderby'
+import template from 'lodash.template'
+import templatesettings from 'lodash.templatesettings'
 import Details from './Details.vue';
 import { FontType, Icon } from '../types'
 import codePoints from '../data/codePoints.json'
+import { host, asset_url_pattern } from '../data/metadata.json'
+
+templatesettings.interpolate = /{([\s\S]+?)}/g
+const compiled_asset_url = template('https://' + host + asset_url_pattern)
 
 interface State {
   font: FontType;
@@ -122,8 +128,31 @@ export default defineComponent({
     })
     const filteredIcons = computed(() => orderBy(filter(), [state.sort], [state.sort === 'popularity' ? 'desc' : 'asc']))
     const selectedIcon = computed(() => {
+      const icon = props.icons.find((icon: Icon) => icon.name === state.selectedName)
+      const family = codePoints.find(code => code.font === state.font)?.['family'] || ''
+      let svgAssetUrl = null
+      let pngAssetUrl = null
+      if (icon && !icon?.unsupported_families?.includes(family)) {
+        const size = icon.sizes_px?.[icon.sizes_px?.length - 1]
+        const font = state.font === 'filled' ? '' : state.font
+        const color = 'black'
+        svgAssetUrl = compiled_asset_url({
+          family: family.replaceAll(' ', '').toLowerCase(),
+          icon: icon.name,
+          version: icon.version,
+          asset: `${size}px.svg`,
+        })
+        pngAssetUrl = compiled_asset_url({
+          family: family.replaceAll(' ', '').toLowerCase(),
+          icon: icon.name,
+          version: icon.version,
+          asset: `${color}-${size}dp.zip`,
+        })
+      }
       return {
-        ...props.icons.find((icon: Icon) => icon.name === state.selectedName),
+        ...icon,
+        svgAssetUrl,
+        pngAssetUrl,
         onClose: () => select(),
       }
     })

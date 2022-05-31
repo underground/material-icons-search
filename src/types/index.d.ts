@@ -7,9 +7,12 @@ export interface Font {
 export interface Icon {
   font: string;
   name: string;
+  version: number | undefined;
   codepoint: string;
+  unsupported_families: string[];
   category: string | undefined;
   tags: string[];
+  sizes_px: number[];
   popularity: number;
 }
 

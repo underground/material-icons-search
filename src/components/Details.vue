@@ -18,6 +18,22 @@
             </div>
             <div class="Box-body overflow-auto">
               <dl>
+                <dd class="position-relative">
+                  <a class="btn btn-sm" :href="svgAssetUrl" role="button"
+                    aria-label="Download asset in SVG format for this icon"
+                    @click.prevent="download(svgAssetUrl)">
+                    <svg class="octicon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16"><path fill-rule="evenodd" d="M7.47 10.78a.75.75 0 001.06 0l3.75-3.75a.75.75 0 00-1.06-1.06L8.75 8.44V1.75a.75.75 0 00-1.5 0v6.69L4.78 5.97a.75.75 0 00-1.06 1.06l3.75 3.75zM3.75 13a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5z"></path></svg>
+                    <span>SVG</span>
+                  </a>
+                  <a class="btn btn-sm ml-2" :href="pngAssetUrl" role="button"
+                    aria-label="Download asset in PNG format for this icon"
+                    download>
+                    <svg class="octicon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16"><path fill-rule="evenodd" d="M7.47 10.78a.75.75 0 001.06 0l3.75-3.75a.75.75 0 00-1.06-1.06L8.75 8.44V1.75a.75.75 0 00-1.5 0v6.69L4.78 5.97a.75.75 0 00-1.06 1.06l3.75 3.75zM3.75 13a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5z"></path></svg>
+                    <span>PNG</span>
+                  </a>
+                </dd>
+              </dl>
+              <dl>
                 <dt class="f6 text-bold text-uppercase text-gray">Html:</dt>
                 <dd class="position-relative">
                   <pre><code>{{ htmlCode() }}</code></pre>
@@ -71,7 +87,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from 'vue'
+import { defineComponent, PropType, computed } from 'vue'
 import Code from './Code.vue';
 
 export default defineComponent({
@@ -83,6 +99,9 @@ export default defineComponent({
     font: {
       type: String,
       required: true
+    },
+    version: {
+      type: Number,
     },
     name: {
       type: String,
@@ -101,6 +120,15 @@ export default defineComponent({
       type: Number,
       default: 0,
     },
+    sizes_px: {
+      type: Array as PropType<number[]>,
+    },
+    svgAssetUrl: {
+      type: String,
+    },
+    pngAssetUrl: {
+      type: String,
+    },
   },
   setup(props) {
     const htmlCode = () => `<span class="material-icons">
@@ -113,7 +141,21 @@ export default defineComponent({
   font-family: 'Material Icons';
   content: "\\${props.codepoint}";
 }`
+    const download = async (url: string) => {
+      try {
+        const response = await fetch(url)
+        const blob = await response.blob()
+        const link = document.createElement('a')
+        link.href = URL.createObjectURL(blob)
+        link.download = `${props.name}-${new URL(url).pathname.split('/').pop() || ''}`
+        link.click()
+        URL.revokeObjectURL(link.href)
+      } catch (err) {
+        console.error(err)
+      }
+    }
     return {
+      download,
       htmlCode,
       reactCode,
       cssCode,
@@ -134,7 +176,7 @@ export default defineComponent({
     align-items: center;
     justify-content: center;
     position: fixed;
-    z-index: 30;
+    z-index: 1000;
     top: 0;
     left: 0;
     width: 100%;
@@ -145,8 +187,12 @@ export default defineComponent({
   &-window {
     overflow: hidden;
   }
+  dl {
+    dd {
+      margin: 2px 0;
+    }
+  }
   pre {
-    margin: .5rem 0;
     padding: .5rem;
     border: solid 1px var(--color-border-default);
     border-radius: 3px;
