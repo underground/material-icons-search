@@ -2,14 +2,23 @@
   <main class="details-reset details-overlay details-overlay-dark mb-4 width-full"
    @click="$emit('close')">
     <div class="position-sticky top-0 d-flex flex-items-center flex-nowrap border-bottom py-2 color-bg-default">
-      <div class="BtnGroup hide-sm" aria-label="Icon type">
+      <div class="BtnGroup" aria-label="Icon type">
         <button v-for="item in codePoints"
           :key="item.font"
           :aria-selected="item.font == font ? 'true': 'false'"
           @click="onChangeFont(item.font)"
           class="BtnGroup-item btn"
           type="button">
-          {{ item.label }}
+          <template v-if="item.font === 'round'">
+            <svg class="octicon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><title>Ellipse</title><path d="M256 464c-114.69 0-208-93.31-208-208S141.31 48 256 48s208 93.31 208 208-93.31 208-208 208z"/></svg>
+          </template>
+          <template v-else-if="item.font === 'sharp'">
+            <svg class="octicon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><title>Triangle</title><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="M48 448L256 64l208 384H48z"/></svg>
+          </template>
+          <template v-else>
+            <svg class="octicon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><title>Square</title><path d="M416 448H96a32.09 32.09 0 01-32-32V96a32.09 32.09 0 0132-32h320a32.09 32.09 0 0132 32v320a32.09 32.09 0 01-32 32z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/></svg>
+          </template>
+          <span class="hide-sm">{{ item.label }}</span>
         </button>
       </div>
       <div>
@@ -216,9 +225,11 @@ export default defineComponent({
   grid-column-gap: 0;
   align-items: center;
   align-content: center;
+  justify-content: center;
 
   @include breakpoint(md) {
     width: $container-md;
+    justify-content: initial;
   }
   @include breakpoint(lg) {
     width: $container-lg;
@@ -285,7 +296,11 @@ export default defineComponent({
   }
 }
 .btn {
+  display: flex;
+  align-items: center;
   svg {
+    width: $body-font-size;
+    height: $body-font-size;
     path {
       fill: var(--color-fg-muted);
     }
