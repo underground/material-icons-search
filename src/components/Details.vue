@@ -65,9 +65,14 @@
                   <Code :code="codepoint" />
                 </dd>
               </dl>
-              <dl v-if="category">
-                <dt class="f6 text-bold text-uppercase text-gray">Category:</dt>
-                <dd><span class="Label ml-1 mt-1">{{ category }}</span></dd>
+              <dl v-if="categories.length">
+                <dt class="f6 text-bold text-uppercase text-gray">Categories:</dt>
+                <div class="d-flex flex-wrap">
+                  <dd v-for="category in categories" :key="category"
+                    class="d-inline-flex">
+                    <span class="Label ml-1 mt-1">{{ category }}</span>
+                  </dd>
+                </div>
               </dl>
               <dl v-if="tags.length">
                 <dt class="f6 text-bold text-uppercase text-gray">Tags:</dt>
@@ -110,8 +115,8 @@ export default defineComponent({
     codepoint: {
       type: String,
     },
-    category: {
-      type: String,
+    categories: {
+      type: Array as PropType<string[]>,
     },
     tags: {
       type: Array as PropType<string[]>,

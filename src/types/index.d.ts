@@ -10,7 +10,7 @@ export interface Icon {
   version: number | undefined;
   codepoint: string;
   unsupported_families: string[];
-  category: string | undefined;
+  categories: string[];
   tags: string[];
   sizes_px: number[];
   popularity: number;

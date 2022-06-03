@@ -17,7 +17,7 @@ export const loadMaterialIcons = async() => {
           codepoint,
           font: source.font,
           unsupported_families: icon?.unsupported_families || [],
-          category: icon?.categories?.[0],
+          categories: icon?.categories || [],
           tags: icon?.tags || [],
           popularity: icon?.popularity || 0,
           sizes_px: icon?.sizes_px || [],
