@@ -2,12 +2,10 @@
   <div class="height-full width-full d-flex flex-column">
     <Header
       :iconNums="icons.length"
-      :searchText="searchText"
       @update:searchText="onChange"
       />
     <Main
-      :searchText="searchText"
-      :icons="icons"
+      :icons="filter(icons, searchText, categories, tags)"
       />
     <Footer />
   </div>
@@ -15,6 +13,8 @@
 
 <script lang="ts">
 import { defineComponent, computed, reactive, toRefs, onMounted } from 'vue'
+import difference from 'lodash.difference'
+import searchString from 'search-string';
 import Header from './components/Header.vue';
 import Main from './components/Main.vue';
 import Footer from './components/Footer.vue';
@@ -24,6 +24,19 @@ import { loadMaterialIcons } from './api/index'
 interface State {
   icons: Icon[];
   searchText: string;
+  tags: string[];
+  categories: string[];
+}
+
+const filter = (icons: Icon[], searchText: string, categories: string[], tags: string[]) => {
+  return icons.filter((icon: Icon) => {
+    if (searchText && icon.name.indexOf(searchText) === -1 ||
+        tags.length > 0 && difference(tags, icon.tags).length > 0 ||
+        categories.length > 0 && difference(categories, icon.categories).length > 0) {
+      return false
+    }
+    return true
+  })
 }
 
 export default defineComponent({
@@ -37,6 +50,8 @@ export default defineComponent({
     const state = reactive<State>({
       icons: [],
       searchText: "",
+      tags: [],
+      categories: [],
     })
     onMounted(async () => {
       const results = await loadMaterialIcons()
@@ -45,10 +60,24 @@ export default defineComponent({
       })
     })
     const onChange = (value: string) => {
-      state.searchText = value
+      const parsedQuery = searchString.parse(value)
+      const { conditionArray } = parsedQuery
+      const grouped = conditionArray.reduce((acc: any, { keyword, value, negated }: any) => {
+        if (!acc[keyword]) {
+          acc[keyword] = []
+        }
+        acc[keyword].push(value)
+        return acc
+      }, {})
+
+      state.searchText = parsedQuery.getAllText()
+      state.tags = grouped?.['tag'] || []
+      state.categories = grouped?.['category'] || []
     }
+
     return {
       ...toRefs(state),
+      filter,
       onChange,
     }
   }

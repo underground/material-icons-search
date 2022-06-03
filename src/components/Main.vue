@@ -109,10 +109,6 @@ export default defineComponent({
       type: Array as PropType<Icon[]>,
       required: true
     },
-    searchText: {
-      type: String,
-      required: true
-    },
   },
   setup(props) {
     const state = reactive<State>({
@@ -133,7 +129,7 @@ export default defineComponent({
       if (icon.font !== state.font) {
         return false
       }
-      return !props.searchText || icon.name.indexOf(props.searchText) >= 0
+      return true
     })
     const filteredIcons = computed(() => orderBy(filter(), [state.sort], [state.sort === 'popularity' ? 'desc' : 'asc']))
     const selectedIcon = computed(() => {
