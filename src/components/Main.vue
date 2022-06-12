@@ -44,12 +44,12 @@
         <span>Loading</span><span class="AnimatedEllipsis"></span>
       </div>
     </div>
-    <div v-else-if="filteredIcons.length">
+    <div v-else-if="icons.length">
       <div class="grid my-3">
         <div class="grid-item"
-          v-for="(icon, index) in filteredIcons" :key="index"
+          v-for="(icon, index) in icons" :key="index"
           v-bind:class="{ active: icon.name === selectedName }"
-          @click="select(icon.name)">
+          @click="selectIcon(icon.name)">
           <div class="d-flex flex-column">
             <div class="grid-item-icon d-flex flex-justify-center">
               <span :class="[`icon ${font === 'filled' ? 'material-icons' : `material-icons-${font}`}`]">{{ icon.name }}</span>
@@ -81,101 +81,39 @@
 
 <script lang="ts">
 import { defineComponent, computed, reactive, toRefs, PropType } from 'vue'
-import orderBy from 'lodash.orderby'
-import template from 'lodash.template'
-import templatesettings from 'lodash.templatesettings'
+import { useStore } from 'vuex'
 import Details from './Details.vue';
-import { FontType, Icon } from '../types'
+import { Icon } from '@/types'
 import codePoints from '../data/codePoints.json'
-import { host, asset_url_pattern } from '../data/metadata.json'
-
-templatesettings.interpolate = /{([\s\S]+?)}/g
-const compiled_asset_url = template('https://' + host + asset_url_pattern)
-
-interface State {
-  font: FontType;
-  sort: string;
-  showCodepoint: boolean;
-  selectedName: string;
-}
 
 export default defineComponent({
   name: 'Main',
   components: {
     Details,
   },
-  props: {
-    icons: {
-      type: Array as PropType<Icon[]>,
-      required: true
-    },
-  },
-  setup(props) {
-    const state = reactive<State>({
-      font: 'filled',
-      sort: 'popularity',
-      showCodepoint: false,
-      selectedName: "",
-    })
-    const select = (name: string|undefined = "") => {
-      if (state.selectedName === name) {
-        state.selectedName = ""
-      } else {
-        state.selectedName = name
-      }
-    }
-    const toggleShowCodepoint = () => state.showCodepoint = !state.showCodepoint;
-    const filter = () => props.icons.filter((icon: Icon) => {
-      if (icon.font !== state.font) {
-        return false
-      }
-      return true
-    })
-    const filteredIcons = computed(() => orderBy(filter(), [state.sort], [state.sort === 'popularity' ? 'desc' : 'asc']))
-    const selectedIcon = computed(() => {
-      const icon = props.icons.find((icon: Icon) => icon.name === state.selectedName)
-      const family = codePoints.find(code => code.font === state.font)?.['family'] || ''
-      let svgAssetUrl = null
-      let pngAssetUrl = null
-      if (icon && !icon?.unsupported_families?.includes(family)) {
-        const size = icon.sizes_px?.[icon.sizes_px?.length - 1]
-        const font = state.font === 'filled' ? '' : state.font
-        const color = 'black'
-        svgAssetUrl = compiled_asset_url({
-          family: family.replaceAll(' ', '').toLowerCase(),
-          icon: icon.name,
-          version: icon.version,
-          asset: `${size}px.svg`,
-        })
-        pngAssetUrl = compiled_asset_url({
-          family: family.replaceAll(' ', '').toLowerCase(),
-          icon: icon.name,
-          version: icon.version,
-          asset: `${color}-${size}dp.zip`,
-        })
-      }
-      return {
-        ...icon,
-        svgAssetUrl,
-        pngAssetUrl,
-        onClose: () => select(),
-      }
-    })
-    const onChangeFont = (value: string) => state.font = value
+  setup() {
+    const store = useStore()
+    const selectedNameRef = computed(() => store.state.selectedName)
+
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.code === 'Escape' && state.selectedName) {
-        select()
+      if (event.code === 'Escape' && selectedNameRef.value) {
+        store.commit("unselectIcon")
       }
     }
     document.addEventListener('keyup', onKeyDown)
+
     return {
-      ...toRefs(state),
       codePoints,
-      select,
-      toggleShowCodepoint,
-      filteredIcons,
-      selectedIcon,
-      onChangeFont,
+      font: computed(() => store.state.font),
+      sort: computed(() => store.state.sort),
+      showCodepoint: computed(() => store.state.showCodepoint),
+      selectedName: selectedNameRef,
+      icons: computed(() => store.getters.icons),
+      selectedIcon: computed(() => store.getters.selectedIcon),
+      selectIcon: (name: string) => store.commit('selectIcon', name),
+      toggleShowCodepoint: () => store.commit('toggleShowCodepoint'),
+      onChangeFont: (value: string) => store.commit("setFont", value),
+      onClose: () => store.commit("unselectIcon"),
     }
   },
 });

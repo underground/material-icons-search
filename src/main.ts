@@ -2,8 +2,10 @@ import { createApp } from 'vue'
 import { ObserveVisibility } from 'vue-observe-visibility'
 import VueGtag from 'vue-gtag-next'
 import App from './App.vue'
+import { store } from './store'
 
 const app = createApp(App)
+app.use(store)
 // https://github.com/Akryum/vue-observe-visibility/issues/219#issuecomment-688586495
 app.directive("observe-visibility", {
   beforeMount: (el, binding, vnode) => {

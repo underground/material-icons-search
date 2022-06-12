@@ -1,43 +1,20 @@
 <template>
   <div class="height-full width-full d-flex flex-column">
-    <Header
-      :iconNums="icons.length"
-      @update:searchText="onChange"
-      />
-    <Main
-      :icons="filter(icons, searchText, categories, tags)"
-      />
+    <Header />
+    <Main />
     <Footer />
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, computed, reactive, toRefs, onMounted } from 'vue'
-import difference from 'lodash.difference'
+import { useStore } from 'vuex'
 import searchString from 'search-string';
 import Header from './components/Header.vue';
 import Main from './components/Main.vue';
 import Footer from './components/Footer.vue';
 import { Icon } from './types'
 import { loadMaterialIcons } from './api/index'
-
-interface State {
-  icons: Icon[];
-  searchText: string;
-  tags: string[];
-  categories: string[];
-}
-
-const filter = (icons: Icon[], searchText: string, categories: string[], tags: string[]) => {
-  return icons.filter((icon: Icon) => {
-    if (searchText && icon.name.indexOf(searchText) === -1 ||
-        tags.length > 0 && difference(tags, icon.tags).length > 0 ||
-        categories.length > 0 && difference(categories, icon.categories).length > 0) {
-      return false
-    }
-    return true
-  })
-}
 
 export default defineComponent({
   name: 'App',
@@ -47,17 +24,11 @@ export default defineComponent({
     Footer,
   },
   setup() {
-    const state = reactive<State>({
-      icons: [],
-      searchText: "",
-      tags: [],
-      categories: [],
-    })
+    const store = useStore()
+
     onMounted(async () => {
       const results = await loadMaterialIcons()
-      results.flat().forEach(data => {
-        state.icons.push(data)
-      })
+      store.commit("setIcons", results)
     })
     const onChange = (value: string) => {
       const parsedQuery = searchString.parse(value)
@@ -69,15 +40,15 @@ export default defineComponent({
         acc[keyword].push(value)
         return acc
       }, {})
-
-      state.searchText = parsedQuery.getAllText()
-      state.tags = grouped?.['tag'] || []
-      state.categories = grouped?.['category'] || []
+      store.commit("setText", parsedQuery.getAllText())
+      store.commit("setTags", grouped?.['tag'] || [])
+      store.commit("setCategories", grouped?.['category'] || [])
     }
 
     return {
-      ...toRefs(state),
-      filter,
+      searchText: computed(() => store.state.searchText),
+      tags: computed(() => store.state.tags),
+      categories: computed(() => store.state.categories),
       onChange,
     }
   }

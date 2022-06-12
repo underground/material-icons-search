@@ -11,7 +11,7 @@
         ref="searchRef"
         :placeholder="placeholder"
         :value="searchText"
-        @input="$emit('update:searchText', $event.target.value)"
+        @input="setSarchText($event.target.value)"
         />
     </div>
     <div class="Header-item Header-item--full">
@@ -37,53 +37,34 @@
 
 <script lang="ts">
 import { defineComponent, reactive, toRefs, ref, onMounted, watch, computed } from 'vue'
+import { useStore } from 'vuex'
+import { State, ColorMode } from '@/types'
 import Logo from './Logo.vue';
-
-type ColorMode = 'auto' | 'light' | 'dark';
-interface State {
-  colorMode: ColorMode;
-}
 
 export default defineComponent({
   name: 'Header',
-  props: {
-    iconNums: {
-      type: Number,
-      required: true
-    },
-    searchText: {
-      type: String,
-      required: true
-    },
-  },
   components: {
     Logo,
   },
   setup(props, { emit }) {
-    const state = reactive<State>({
-      colorMode: 'auto',
-    })
+    const store = useStore()
+    const loadingRef = computed(() => store.state.loading)
+    const iconNumsRef = computed(() => store.getters.iconNums)
     const searchRef = ref<HTMLInputElement>()
     onMounted(() => {
-      state.colorMode = window.matchMedia("(prefers-color-scheme: dark)").matches ? 'dark' : 'light'
+      store.commit("setColorMode", window.matchMedia("(prefers-color-scheme: dark)").matches ? 'dark' : 'light')
     })
-    watch(
-      () => ({...state}),
+    store.watch(
+      (state, getters) => state.colorMode,
       (next, prev) => {
-        if (next.colorMode !== prev.colorMode) {
-          document.documentElement.setAttribute('data-color-mode', next.colorMode)
-        }
-      },
-    )
+        document.documentElement.setAttribute('data-color-mode', next)
+      })
+
     const visibilityChanged = (isVisible: boolean) => {
       if (!isVisible) {
         emit('close')
       }
     }
-    const changeColorMode = (color: ColorMode) => {
-      state.colorMode = color
-    }
-    const placeholder = computed(() => `Search ${props.iconNums > 0 ? props.iconNums.toLocaleString() : ''} icons (Press "/" to focus)`)
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.code === 'Slash') {
         if (searchRef.value) {
@@ -93,11 +74,13 @@ export default defineComponent({
     }
     document.addEventListener('keyup', onKeyDown)
     return {
-      ...toRefs(state),
-      placeholder,
+      searchText: computed(() => store.state.searchText),
+      colorMode: computed(() => store.state.colorMode),
+      placeholder: computed(() => `Search ${loadingRef.value ? '' : iconNumsRef.value.toLocaleString()} icons (Press "/" to focus)`),
       searchRef,
-      changeColorMode,
       visibilityChanged,
+      changeColorMode: (color: ColorMode) => store.commit("setColorMode", color),
+      setSarchText: (value: string) => store.commit('setText', value),
     }
   },
 });

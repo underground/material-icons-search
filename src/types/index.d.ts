@@ -1,3 +1,21 @@
+type ColorMode = 'auto' | 'light' | 'dark';
+type Dict = Record<string, Icon>
+type Icons = Record<string, Dict>
+
+export interface State {
+  loading: boolean;
+  icons: Icons;
+  searchText: string;
+  tags: string[];
+  categories: string[];
+  // font: FontType;
+  font: string;
+  sort: string;
+  showCodepoint: boolean;
+  selectedName: string;
+  colorMode: ColorMode;
+}
+
 export interface Font {
   font: string,
   label: string,
