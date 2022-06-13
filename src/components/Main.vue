@@ -161,7 +161,7 @@ export default defineComponent({
         onClose: () => select(),
       }
     })
-    const onChangeFont = (value: string) => state.font = value
+    const onChangeFont = (value: FontType) => state.font = value
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.code === 'Escape' && state.selectedName) {
         select()

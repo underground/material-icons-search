@@ -16,5 +16,4 @@ export interface Icon {
   popularity: number;
 }
 
-export const FONTS = ["filled", "outlined", "rounded", "twoTone", "sharp"]
-export interface FontType = typeof FONTS[number]
+export type FontType = 'filled' | 'round' | 'sharp'
