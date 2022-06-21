@@ -53,7 +53,7 @@
                   <pre><code>{{ cssCode("before") }}</code></pre>
                   <Code :code="cssCode('before')" />
                 </dd>
-                <dd class="position-relative">
+                <dd class="position-relative mt-2">
                   <pre><code>{{ cssCode("after") }}</code></pre>
                   <Code :code="cssCode('after')" />
                 </dd>
