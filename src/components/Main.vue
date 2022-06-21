@@ -1,4 +1,38 @@
 <template>
+  <header class="Header" @click="$emit('close')" v-observe-visibility="visibilityChanged">
+    <div class="Header-item flex-items-center">
+      <Logo classname="ml-1" />
+    </div>
+    <div class="Header-item width-full">
+      <input class="form-control input-sm header-search width-full"
+        type="search"
+        spellcheck="false"
+        aria-label="Icon search"
+        ref="searchRef"
+        :placeholder="placeholder"
+        :value="searchText"
+        @input="$emit('update:searchText', $event.target.value)"
+        />
+    </div>
+    <div class="Header-item Header-item--full">
+    </div>
+    <div class="Header-item flex-items-center theme-icon"
+      @click="changeColorMode(colorMode === 'light' ? 'dark' : 'light')">
+       <template v-if="colorMode === 'light'">
+        <svg xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Activate dark mode" viewBox="0 0 16 16" width="16" height="16">
+          <path fill-rule="evenodd" d="M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z"></path>
+        </svg>
+      </template>
+      <template v-else>
+        <svg xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Activate light mode" viewBox="0 0 16 16" width="16" height="16"><path fill-rule="evenodd" d="M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z"></path></svg>
+      </template>
+    </div>
+    <div class="Header-item flex-items-center">
+      <a href="https://material.io/develop/web/getting-started" target="_blank" rel="noopener noreferrer" class="Header-link mr-3">
+        Get Started
+      </a>
+    </div>
+  </header>
   <main class="details-reset details-overlay details-overlay-dark mb-4 width-full"
    @click="$emit('close')">
     <div class="position-sticky top-0 d-flex flex-items-center flex-nowrap border-bottom py-2 color-bg-default">
@@ -80,10 +114,11 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, reactive, toRefs, PropType } from 'vue'
+import { defineComponent, computed, reactive, toRefs, PropType, ref, onMounted, watch } from 'vue'
 import orderBy from 'lodash.orderby'
 import template from 'lodash.template'
 import templatesettings from 'lodash.templatesettings'
+import Logo from './Logo.vue';
 import Details from './Details.vue';
 import { FontType, Icon } from '../types'
 import codePoints from '../data/codePoints.json'
@@ -92,16 +127,19 @@ import { host, asset_url_pattern } from '../data/metadata.json'
 templatesettings.interpolate = /{([\s\S]+?)}/g
 const compiled_asset_url = template('https://' + host + asset_url_pattern)
 
+type ColorMode = 'auto' | 'light' | 'dark';
 interface State {
   font: FontType;
   sort: string;
   showCodepoint: boolean;
+  colorMode: ColorMode;
   selectedName: string;
 }
 
 export default defineComponent({
   name: 'Main',
   components: {
+    Logo,
     Details,
   },
   props: {
@@ -109,14 +147,41 @@ export default defineComponent({
       type: Array as PropType<Icon[]>,
       required: true
     },
+    searchText: {
+      type: String,
+      required: true
+    },
   },
   setup(props) {
     const state = reactive<State>({
       font: 'filled',
       sort: 'popularity',
+      colorMode: 'auto',
       showCodepoint: false,
       selectedName: "",
     })
+    const searchRef = ref<HTMLInputElement>()
+    onMounted(() => {
+      state.colorMode = window.matchMedia("(prefers-color-scheme: dark)").matches ? 'dark' : 'light'
+    })
+    watch(
+      () => ({...state}),
+      (next, prev) => {
+        if (next.colorMode !== prev.colorMode) {
+          document.documentElement.setAttribute('data-color-mode', next.colorMode)
+        }
+      },
+    )
+    const visibilityChanged = (isVisible: boolean) => {
+      if (!isVisible) {
+        state.selectedName = ""
+      }
+    }
+    const changeColorMode = (color: ColorMode) => {
+      state.colorMode = color
+    }
+    const placeholder = computed(() => `Search ${props.icons.length > 0 ? props.icons.length.toLocaleString() : ''} icons (Press "/" to focus)`)
+
     const select = (name: string|undefined = "") => {
       if (state.selectedName === name) {
         state.selectedName = ""
@@ -139,7 +204,6 @@ export default defineComponent({
       let pngAssetUrl = null
       if (icon && !icon?.unsupported_families?.includes(family)) {
         const size = icon.sizes_px?.[icon.sizes_px?.length - 1]
-        const font = state.font === 'filled' ? '' : state.font
         const color = 'black'
         svgAssetUrl = compiled_asset_url({
           family: family.replaceAll(' ', '').toLowerCase(),
@@ -163,7 +227,11 @@ export default defineComponent({
     })
     const onChangeFont = (value: FontType) => state.font = value
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.code === 'Escape' && state.selectedName) {
+      if (event.code === 'Slash') {
+        if (searchRef.value) {
+          searchRef.value.focus()
+        }
+      } else if (event.code === 'Escape' && state.selectedName) {
         select()
       }
     }
@@ -176,17 +244,72 @@ export default defineComponent({
       filteredIcons,
       selectedIcon,
       onChangeFont,
+      placeholder,
+      searchRef,
+      changeColorMode,
+      visibilityChanged,
     }
   },
 });
 </script>
 
 <style lang="scss" scoped>
+@import "@primer/css/header/index.scss";
+@import "@primer/css/popover/index.scss";
 @import '@primer/css/utilities/index.scss';
 @import '@primer/css/subhead/index.scss';
 @import '@primer/css/labels/index.scss';
 @import '@primer/css/blankslate/index.scss';
 @import '@primer/css/loaders/index.scss';
+
+svg {
+  path {
+    fill: var(--color-header-logo);
+  }
+}
+
+.Header-item {
+  &.theme-icon {
+    margin-right: 0px !important;
+    @include breakpoint(md) {
+      margin-right: $spacer-3 !important;
+    }
+  }
+}
+
+@include breakpoint(md) {
+  .header-search {
+    max-width: 272px;
+  }
+}
+
+.header-search {
+  box-shadow: none;
+  color: var(--color-scale-white);
+  background-color: var(--color-header-search-bg);
+  border: 1px solid var(--color-header-search-border);
+  box-shadow: none;
+  transition: .2s ease-in-out;
+  transition-property: max-width;
+
+  &:focus,
+  &:focus-visible {
+    border-color: var(--color-header-search-border);
+  }
+}
+
+.Header-link {
+  cursor: pointer;
+  .Popover {
+    font-weight: 300;
+    cursor: default;
+  }
+
+  display: none;
+  @include breakpoint(md) {
+    display: block;
+  }
+}
 
 .position-sticky {
   z-index: 10;

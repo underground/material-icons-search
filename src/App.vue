@@ -1,21 +1,18 @@
 <template>
   <div class="height-full width-full d-flex flex-column">
-    <Header
-      :iconNums="icons.length"
-      @update:searchText="onChange"
-      />
     <Main
       :icons="filter(icons, searchText, categories, tags)"
+      :searchText="searchText"
+      @update:searchText="onChange"
       />
     <Footer />
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, reactive, toRefs, onMounted } from 'vue'
+import { defineComponent, reactive, toRefs, onMounted } from 'vue'
 import difference from 'lodash.difference'
 import searchString from 'search-string';
-import Header from './components/Header.vue';
 import Main from './components/Main.vue';
 import Footer from './components/Footer.vue';
 import { Icon } from './types'
@@ -42,7 +39,6 @@ const filter = (icons: Icon[], searchText: string, categories: string[], tags: s
 export default defineComponent({
   name: 'App',
   components: {
-    Header,
     Main,
     Footer,
   },
@@ -62,7 +58,7 @@ export default defineComponent({
     const onChange = (value: string) => {
       const parsedQuery = searchString.parse(value)
       const { conditionArray } = parsedQuery
-      const grouped = conditionArray.reduce((acc: any, { keyword, value, negated }: any) => {
+      const grouped = conditionArray.reduce((acc: any, { keyword, value }: any) => {
         if (!acc[keyword]) {
           acc[keyword] = []
         }
