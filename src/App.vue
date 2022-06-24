@@ -1,6 +1,6 @@
 <template>
   <div class="height-full width-full d-flex flex-column">
-    <Main
+    <router-view
       :icons="filter(icons, searchText, categories, tags)"
       :searchText="searchText"
       @update:searchText="onChange"
@@ -13,7 +13,6 @@
 import { defineComponent, reactive, toRefs, onMounted } from 'vue'
 import difference from 'lodash.difference'
 import searchString from 'search-string';
-import Main from './components/Main.vue';
 import Footer from './components/Footer.vue';
 import { Icon } from './types'
 import { loadMaterialIcons } from './api/index'
@@ -39,7 +38,6 @@ const filter = (icons: Icon[], searchText: string, categories: string[], tags: s
 export default defineComponent({
   name: 'App',
   components: {
-    Main,
     Footer,
   },
   setup() {
