@@ -8,5 +8,9 @@ export default createRouter({
       path: "/",
       component: Main,
     },
+    {
+      path: '/material-icons-search/',
+      component: Main,
+    },
   ],
 })

@@ -1,5 +1,5 @@
 module.exports = {
-  publicPath: "./",
+  publicPath: process.env.NODE_ENV === 'production' ? '/material-icons-search/' : '/',
   css: {
     loaderOptions: {
       sass: {
