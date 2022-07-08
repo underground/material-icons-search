@@ -33,7 +33,7 @@
     "@types/lodash.template": "^4.5.1",
     "@typescript-eslint/eslint-plugin": "^5.28.0",
     "@typescript-eslint/parser": "^5.28.0",
-    "@vue/cli-plugin-babel": "^5.0.4",
+    "@vue/cli-plugin-babel": "^5.0.8",
     "@vue/cli-plugin-eslint": "^5.0.4",
     "@vue/cli-plugin-typescript": "^5.0.4",
     "@vue/cli-service": "^5.0.4",
